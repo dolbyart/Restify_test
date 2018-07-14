@@ -92,21 +92,20 @@ server.get('/api/departamentos', (req, res, next) => {
         next(console.log(err));
     }); */
 
-    const obj = {
+    let obj = {
         totalRows: 0,
         data: []
     };
 
-
     executeQuery(`SELECT * FROM [departamentos] ORDER BY departamentoId ASC OFFSET ${(req.paginate.page - 1) * req.paginate.per_page} ROWS FETCH NEXT ${req.paginate.per_page} ROWS ONLY`).then((data) => {
         obj.data = data;
-        obj.data.forEach(x => x.url = `${config.base_url}${req.route.path}/${x.DepartamentoId}`)
+        obj.data.forEach(x => x.url = `${config.base_url}${req.route.path}/${x.DepartamentoId}`);
         executeQuery(`SELECT COUNT(departamentoId) as totalRows FROM [departamentos]`).then((rowsCount) => {
             obj.totalRows = rowsCount[0].totalRows;
             res.send(200, obj);
 
-            let paginatedResponse = res.paginate.getPaginatedResponse(data);
-            //next(console.log(paginatedResponse));
+            //let paginatedResponse = res.paginate.getPaginatedResponse(data);
+            next();
         }, (err) => {
             next(console.log(err));
         });
@@ -118,9 +117,23 @@ server.get('/api/departamentos', (req, res, next) => {
 
 server.get('/api/departamentos/:id', (req, res, next) => {
 
-    executeQuery(`SELECT * FROM [departamentos] WHERE departamentoId = ${req.params.id}`).then((result) => {
-        res.send(200, result);
-        next();
+    let obj = {
+        prev: null,
+        data: null,
+        next: null
+    };
+
+    executeQuery(`SELECT * FROM [departamentos] WHERE departamentoId = ${req.params.id}`).then((data) => {
+        obj.data = data[0];
+        executeQuery(`SELECT DepartamentoId FROM [departamentos] ORDER BY departamentoId OFFSET ${(req.params.id-2)} ROWS FETCH NEXT 1 ROWS ONLY`).then((prev) => {
+            obj.prev = prev;
+            res.send(200, obj);
+
+            //let paginatedResponse = res.paginate.getPaginatedResponse(data);
+            next();
+        }, (err) => {
+            next(console.log(err));
+        });
     }, (err) => {
         next(console.log(err));
     });
