@@ -1,0 +1,20 @@
+{
+  "name": "restify_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Artur",
+  "license": "ISC",
+  "dependencies": {
+    "eslint": "^5.1.0",
+    "mssql": "^4.1.0",
+    "restify": "^7.2.1",
+    "restify-cors-middleware": "^1.1.1",
+    "restify-errors": "^6.1.1",
+    "restify-paginate": "0.0.5"
+  }
+}
