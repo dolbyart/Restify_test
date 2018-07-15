@@ -1,6 +1,6 @@
 require('dotenv').config({
     path: 'env.env',
-  });
+});
 const restify = require('restify');
 const config = require('./config');
 //const errors = require('restify-errors');
