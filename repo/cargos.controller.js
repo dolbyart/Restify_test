@@ -5,6 +5,9 @@ class CargosController {
     _DB_NAME() {
         return 'dbo.Cargos';
     }
+    _KEY() {
+        return 'CargoId';
+    }
 
     constructor() {
         this.inMemoryStorage = [{
