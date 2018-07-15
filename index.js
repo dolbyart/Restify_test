@@ -139,32 +139,35 @@ server.get('/api/departamentos/:id', (req, res, next) => {
 
 //#endregion
 
-//POST API
+//#region POST API
 server.post("/api/departamentos", (req, res, next) => {
-    executeQuery(`INSERT INTO [departamentos] (Nombre) VALUES ('${req.body.nombre}')`).then(() => {
+    executeQuery(`INSERT INTO dbo.Departamentos (Nombre) VALUES ('${req.body.nombre}')`).then(() => {
         res.send(201);
         next();
     }, (err) => {
         next(console.log(err));
     });
 });
+//#endregion
 
-//PUT API
+//#region PUT API
 server.put('/api/departamentos/:id', (req, res, next) => {
-    executeQuery(`UPDATE [departamentos] SET Nombre ='${req.body.nombre}' WHERE departamentoId = ${req.params.id}`).then(() => {
+    executeQuery(`UPDATE dbo.Departamentos SET Nombre ='${req.body.nombre}' WHERE DepartamentoId = ${req.params.id}`).then(() => {
         res.send(200);
         next();
     }, (err) => {
         next(console.log(err));
     });
 });
+//#endregion
 
-// DELETE API
+//#region DELETE API
 server.del('/api/departamentos/:id', (req, res, next) => {
-    executeQuery(`DELETE FROM [departamentos] WHERE departamentoId = ${req.params.id}`).then(() => {
+    executeQuery(`DELETE FROM dbo.Departamentos WHERE DepartamentoId = ${req.params.id}`).then(() => {
         res.send(204);
         next();
     }, (err) => {
         next(console.log(err));
     });
 });
+//#endregion
