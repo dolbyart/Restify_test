@@ -1,3 +1,6 @@
+require('dotenv').config({
+    path: 'env.env',
+  });
 const restify = require('restify');
 const config = require('./config');
 //const errors = require('restify-errors');
@@ -38,14 +41,12 @@ function urlById(route, id) {
     return `${config.base_url}${route}/${id}`;
 }
 
-
 async function executeQuery(query) {
     return await new Promise((resolve, reject) => {
         new sql.connect(config.sqlConfig).then(pool => {
             // Query
 
             return pool.request()
-                //.input('input_parameter', sql.Int, value)
                 .query(query)
         }).then(result => {
             resolve(result.recordset);

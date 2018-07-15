@@ -4,17 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "gitpush": "git add . && git commit -m \"update\" && git push"
   },
   "author": "Artur",
   "license": "ISC",
   "dependencies": {
+    "applicationinsights": "^1.0.3",
+    "dotenv": "^6.0.0",
     "eslint": "^5.1.0",
+    "moment": "^2.22.2",
     "mssql": "^4.1.0",
+    "redis": "^2.8.0",
     "restify": "^7.2.1",
     "restify-cors-middleware": "^1.1.1",
-    "restify-errors": "^6.1.1"
+    "restify-errors": "^6.1.1",
+    "restify-router": "^0.5.0",
+    "validate.js": "^0.12.0"
   }
 }
