@@ -1,6 +1,34 @@
 let sql = require('mssql'); // MS Sql Server client
 const tracer = require('../common/tracer')({});
-class CargoController {
+class CargosController {
+
+    _DB_NAME() {
+        return 'dbo.Cargos';
+    }
+
+    constructor() {
+        this.inMemoryStorage = [{
+                cargoId: 1,
+                Nombre: "Cargo1"
+            },
+            {
+                cargoId: 2,
+                Nombre: "Cargo2"
+            },
+            {
+                cargoId: 3,
+                Nombre: "Cargo3"
+            },
+            {
+                cargoId: 4,
+                Nombre: "Cargo4"
+            },
+            {
+                cargoId: 5,
+                Nombre: "Cargo5"
+            }
+        ];
+    }
 
     getCargos(req) {
 
@@ -48,4 +76,4 @@ class CargoController {
     }
 }
 
-module.exports = new CargoController();
+module.exports = new CargosController();
