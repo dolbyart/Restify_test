@@ -34,6 +34,11 @@ server.pre((req, res, next) => {
     return next();
 });
 
+function urlById(route, id) {
+    return `${config.base_url}${route}/${id}`;
+}
+
+
 async function executeQuery(query) {
     return await new Promise((resolve, reject) => {
         new sql.connect(config.sqlConfig).then(pool => {
@@ -67,7 +72,7 @@ async function executeQuery(query) {
     });
 } */
 
-//GET API
+//#region GET API
 server.get('/api/departamentos', (req, res, next) => {
 
     let queryString = '';
@@ -97,8 +102,8 @@ server.get('/api/departamentos', (req, res, next) => {
 
     executeQuery(`SELECT * FROM dbo.Departamentos ${queryString}`).then((data) => {
         obj.data = data;
-        obj.data.forEach(x => x.url = `${config.base_url}${req.route.path}/${x.DepartamentoId}`);
-        executeQuery(`SELECT COUNT(DepartamentoId) as totalRows FROM dbo.Departamentos`).then((rowsCount) => {
+        obj.data.forEach(x => x.url = urlById(req.route.path, x.DepartamentoId));
+        executeQuery(`SELECT COUNT(DepartamentoId) AS totalRows FROM dbo.Departamentos`).then((rowsCount) => {
             obj.totalRows = rowsCount[0].totalRows;
             res.send(200, obj);
             next();
@@ -111,41 +116,30 @@ server.get('/api/departamentos', (req, res, next) => {
 
 });
 
+
 server.get('/api/departamentos/:id', (req, res, next) => {
 
-    let obj = {
-        prev: null,
-        data: null,
-        next: null
-    };
+    executeQuery(`SELECT *
+    FROM(
+        SELECT *,
+        LAG(DepartamentoId) OVER (ORDER BY DepartamentoId) AS prevId,
+        LEAD(DepartamentoId) OVER (ORDER BY DepartamentoId) AS nextId
+        FROM dbo.Departamentos
+    ) x
+    WHERE DepartamentoId = ${req.params.id}`)
+        .then((data) => {
+            console.log(data);
 
-    executeQuery(`SELECT * FROM dbo.Departamentos WHERE DepartamentoId = ${req.params.id}`).then((data) => {
-        obj.data = data[0];
-        executeQuery(`SELECT *
-        FROM(
-            SELECT
-            [DepartamentoId],
-            lag(DepartamentoId) over (order by DepartamentoId) as prev,
-            lead(DepartamentoId) over (order by DepartamentoId) as next
-            FROM dbo.Departamentos
-        ) x
-        WHERE ${req.params.id} IN (departamentoId,prev,next)`)
 
-            //executeQuery(`SELECT DepartamentoId FROM [departamentos] ORDER BY departamentoId OFFSET ${(req.params.id-2)} ROWS FETCH NEXT 1 ROWS ONLY`)
-            .then((prev) => {
-                console.log(prev);
-                obj.prev = prev;
-                res.send(200, obj);
 
-                //let paginatedResponse = res.paginate.getPaginatedResponse(data);
-                next();
-            }, (err) => {
-                next(console.log(err));
-            });
-    }, (err) => {
-        next(console.log(err));
-    });
+            res.send(200, data);
+            next();
+        }, (err) => {
+            next(console.log(err));
+        });
 });
+
+//#endregion
 
 //POST API
 server.post("/api/departamentos", (req, res, next) => {
