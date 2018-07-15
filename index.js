@@ -3,7 +3,6 @@ const config = require('./config');
 //const errors = require('restify-errors');
 //const corsMiddleware = require('restify-cors-middleware');
 const sql = require('mssql'); // MS Sql Server client
-const paginate = require('restify-paginate');
 
 const server = restify.createServer({
     name: config.name,
@@ -27,15 +26,8 @@ server.use(cors.actual); */
 //server.use(restify.plugins.bodyParser());
 
 server.use(restify.plugins.queryParser());
-let paginateOptions = {
-    defaults: {
-        page: 1,
-        per_page: 100
-    },
-    hostname: false
-};
 //server.use(restify.queryParser());
-server.use(paginate(server, paginateOptions));
+
 
 server.pre((req, res, next) => {
     console.info(`${req.method} - ${req.url}`);
@@ -77,34 +69,38 @@ async function executeQuery(query) {
 
 //GET API
 server.get('/api/departamentos', (req, res, next) => {
-    req.paginate = req.query;
 
-    if (req.paginate.per_page > paginateOptions.defaults.per_page) {
-        res.send(400, 'No mas de 100 por pagina');
-        next();
+    let queryString = '';
+
+    if (Object.keys(req.query).length !== 0) {
+        let sortString = '';
+        req.query.sort !== undefined ? sortString = req.query.sort : sortString = 'DepartamentoId asc';
+
+        if (req.query.page !== undefined || req.query.per_page !== undefined) {
+            if (req.query.per_page > config.max_per_page) {
+                res.send(400, `No mas de ${config.max_per_page} por pagina`);
+                next();
+            }
+            let page = req.query.page !== undefined ? req.query.page : 1;
+            let per_page = req.query.per_page !== undefined ? req.query.per_page : config.max_per_page;
+
+            queryString = `ORDER BY ${sortString} OFFSET ${(page - 1) * per_page} ROWS FETCH NEXT ${per_page} ROWS ONLY`;
+        } else
+            queryString = `ORDER BY ${sortString}`;
+
     }
-
-    /* executeQuery(`SELECT x.total,departamentoId,nombre FROM [departamentos],(SELECT COUNT(departamentoId) as total FROM [departamentos]) as x ORDER BY departamentoId ASC OFFSET ${(req.paginate.page - 1) * req.paginate.per_page} ROWS FETCH NEXT ${req.paginate.per_page} ROWS ONLY`).then((result) => {
-        res.send(200, JSON.stringify(result));
-        var paginatedResponse = res.paginate.getPaginatedResponse(result);
-        next();
-    }, (err) => {
-        next(console.log(err));
-    }); */
 
     let obj = {
         totalRows: 0,
         data: []
     };
 
-    executeQuery(`SELECT * FROM [departamentos] ORDER BY departamentoId ASC OFFSET ${(req.paginate.page - 1) * req.paginate.per_page} ROWS FETCH NEXT ${req.paginate.per_page} ROWS ONLY`).then((data) => {
+    executeQuery(`SELECT * FROM dbo.Departamentos ${queryString}`).then((data) => {
         obj.data = data;
         obj.data.forEach(x => x.url = `${config.base_url}${req.route.path}/${x.DepartamentoId}`);
-        executeQuery(`SELECT COUNT(departamentoId) as totalRows FROM [departamentos]`).then((rowsCount) => {
+        executeQuery(`SELECT COUNT(DepartamentoId) as totalRows FROM dbo.Departamentos`).then((rowsCount) => {
             obj.totalRows = rowsCount[0].totalRows;
             res.send(200, obj);
-
-            //let paginatedResponse = res.paginate.getPaginatedResponse(data);
             next();
         }, (err) => {
             next(console.log(err));
@@ -123,17 +119,29 @@ server.get('/api/departamentos/:id', (req, res, next) => {
         next: null
     };
 
-    executeQuery(`SELECT * FROM [departamentos] WHERE departamentoId = ${req.params.id}`).then((data) => {
+    executeQuery(`SELECT * FROM dbo.Departamentos WHERE DepartamentoId = ${req.params.id}`).then((data) => {
         obj.data = data[0];
-        executeQuery(`SELECT DepartamentoId FROM [departamentos] ORDER BY departamentoId OFFSET ${(req.params.id-2)} ROWS FETCH NEXT 1 ROWS ONLY`).then((prev) => {
-            obj.prev = prev;
-            res.send(200, obj);
+        executeQuery(`SELECT *
+        FROM(
+            SELECT
+            [DepartamentoId],
+            lag(DepartamentoId) over (order by DepartamentoId) as prev,
+            lead(DepartamentoId) over (order by DepartamentoId) as next
+            FROM dbo.Departamentos
+        ) x
+        WHERE ${req.params.id} IN (departamentoId,prev,next)`)
 
-            //let paginatedResponse = res.paginate.getPaginatedResponse(data);
-            next();
-        }, (err) => {
-            next(console.log(err));
-        });
+            //executeQuery(`SELECT DepartamentoId FROM [departamentos] ORDER BY departamentoId OFFSET ${(req.params.id-2)} ROWS FETCH NEXT 1 ROWS ONLY`)
+            .then((prev) => {
+                console.log(prev);
+                obj.prev = prev;
+                res.send(200, obj);
+
+                //let paginatedResponse = res.paginate.getPaginatedResponse(data);
+                next();
+            }, (err) => {
+                next(console.log(err));
+            });
     }, (err) => {
         next(console.log(err));
     });

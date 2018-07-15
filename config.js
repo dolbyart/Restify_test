@@ -1,4 +1,5 @@
 module.exports = {
+    max_per_page: 100,
     name: 'restify test',
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 3000,
