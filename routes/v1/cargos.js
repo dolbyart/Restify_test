@@ -9,7 +9,6 @@ const router = new restifyRouter();
 const repo = require('../../repo/cargos.controller');
 
 router.get('/', (req, res, next) => {
-
     repo
         .getCargos(req)
         .then((data) => {

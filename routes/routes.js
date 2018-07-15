@@ -1,4 +1,7 @@
 const restifyRouter = require('restify-router').Router;
+require('dotenv').config({
+    path: 'env.env',
+});
 
 const router = new restifyRouter();
 

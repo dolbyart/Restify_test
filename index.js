@@ -2,18 +2,17 @@ require('dotenv').config({
     path: 'env.env',
 });
 const restify = require('restify');
-const config = require('./config');
+require('./helpers/config.db').connect();
 //const errors = require('restify-errors');
 //const corsMiddleware = require('restify-cors-middleware');
 const sql = require('mssql'); // MS Sql Server client
 
 const server = restify.createServer({
-    name: config.name,
-    version: config.version
+    handleUncaughtExceptions: true,
 });
 
-server.listen(config.port, () => {
-    console.info(`${server.name} is running on port ${config.port} url: ${config.base_url}`);
+server.listen(process.env.PORT, () => {
+    console.info(`${server.name} is running on port ${process.env.PORT} url: ${server.url}`);
 });
 
 
@@ -33,7 +32,7 @@ server.use(restify.plugins.queryParser());
 
 
 server.pre((req, res, next) => {
-    console.info(`${req.method} - ${req.url}`);
+    console.info(`${req.method} - ${server.url} ${req.url}`);
     return next();
 });
 
@@ -72,6 +71,11 @@ async function executeQuery(query) {
             });
     });
 } */
+
+const config = {
+    max_per_page: 50,
+
+}
 
 //#region GET API
 server.get('/api/departamentos', (req, res, next) => {
