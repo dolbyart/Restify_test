@@ -122,16 +122,14 @@ server.get('/api/departamentos/:id', (req, res, next) => {
     executeQuery(`SELECT *
     FROM(
         SELECT *,
-        LAG(DepartamentoId) OVER (ORDER BY DepartamentoId) AS prevId,
-        LEAD(DepartamentoId) OVER (ORDER BY DepartamentoId) AS nextId
+        LAG(DepartamentoId) OVER (ORDER BY DepartamentoId) AS prevUrl,
+        LEAD(DepartamentoId) OVER (ORDER BY DepartamentoId) AS nextUrl
         FROM dbo.Departamentos
     ) x
     WHERE DepartamentoId = ${req.params.id}`)
         .then((data) => {
-            console.log(data);
-
-
-
+            data[0].prevUrl !== null ? data[0].prevUrl = urlById(req.route.path.substr(0, req.route.path.indexOf('/:')), data[0].prevUrl) : null;
+            data[0].nextUrl !== null ? data[0].nextUrl = urlById(req.route.path.substr(0, req.route.path.indexOf('/:')), data[0].nextUrl) : null;
             res.send(200, data);
             next();
         }, (err) => {
