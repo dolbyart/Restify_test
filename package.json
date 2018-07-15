@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gitpush": "git add . && git commit -m \"update $(Get-Date -Format g)\" && git push"
+    "gitpush": "git add . && git commit -m \"update $TIME\" && git push"
   },
   "author": "Artur",
   "license": "ISC",
