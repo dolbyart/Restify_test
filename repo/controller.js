@@ -78,8 +78,10 @@ const get = (req, tableName, key, maxPerPage) => {
                 if (obj.data.length > 0) {
                     if (obj.totalRows === null)
                         obj.totalRows = obj.data.length;
+                    else
+                        obj.totalRows = +obj.totalRows;
                     obj.totalPages = queries.per_page ? Math.ceil(obj.totalRows / queries.per_page) : 1;
-                    obj.page = queries.page ? queries.page : 1;
+                    obj.page = queries.page ? +queries.page : 1;
                 } else
                     obj.page = obj.totalRows = null;
                 obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[_KEY]}`);
