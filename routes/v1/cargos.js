@@ -6,11 +6,11 @@ const {
 
 const router = new restifyRouter();
 
-const repo = require('../../repo/cargos.controller');
+const repo = require('../../repo/controller');
 
 router.get('/', (req, res, next) => {
     repo
-        .getCargos(req)
+        .get(req,'dbo.Cargos','CargoId')
         .then((data) => {
             tracer.trackTrace(`cargos`);
             tracer.trackEvent('cargos');

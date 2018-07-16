@@ -3,15 +3,18 @@ require('dotenv').config({
     path: 'env.env'
 });
 
-const _TABLE_NAME = 'dbo.Cargos';
-const _KEY = 'CargoId';
+let _TABLE_NAME = '';
+let _KEY = '';
 const maxPerPage = process.env.MAX_PER_PAGE;
 let per_page = maxPerPage;
-let page = null;
+let page = 1;
 
 //#region  GET
 
-const getCargos = (req) => {
+const get = (req, tableName, key) => {
+
+    _TABLE_NAME = tableName;
+    _KEY = key;
 
     let paginate = false;
 
@@ -19,9 +22,6 @@ const getCargos = (req) => {
 
     if (Object.keys(req.query).length !== 0) {
         let sortString = req.query.sort !== undefined ? req.query.sort : '';
-
-        //let paginateString = '';
-
         if (req.query.page !== undefined || req.query.per_page !== undefined) {
             paginate = true;
             if (+req.query.per_page > maxPerPage) {
@@ -39,33 +39,6 @@ const getCargos = (req) => {
 
         let filterString = '';
     }
-
-    /* let filtered = false;
-    let sorted = false;
-    let paginated = false;
-
-    if (req.query.page !== undefined || req.query.per_page !== undefined)
-        paginated = true;
-
-    let queryString = '';
-
-    if (Object.keys(req.query).length !== 0) {
-        let sortString = '';
-        sortString = req.query.sort !== undefined ? req.query.sort : `${ _KEY} ASC`;
-
-        if (paginated) {
-            if (+req.query.per_page > _MAX_PER_PAGE) {
-                return new Promise((resolve, reject) => {
-                    reject(`No mas de ${_MAX_PER_PAGE} por pagina`);
-                });
-            }
-            let page = req.query.page !== undefined ? req.query.page : 1;
-            let per_page = req.query.per_page !== undefined ? req.query.per_page : _MAX_PER_PAGE;
-            queryString = `ORDER BY ${sortString} OFFSET ${(page - 1) * per_page} ROWS FETCH NEXT ${per_page} ROWS ONLY`;
-        } else
-            queryString = `ORDER BY ${sortString}`;
-
-    } */
 
     let obj = {
         totalRows: null,
@@ -89,16 +62,13 @@ const getCargos = (req) => {
                 obj = data.recordsets[0][0];
                 obj.data = data.recordsets[1];
                 if (obj.data.length > 0) {
-                    if (obj.totalRows === null) {
-                        obj.totalPages = obj.totalRows = obj.data.length;
-                    }
+                    if (obj.totalRows === null)
+                        obj.totalRows = obj.data.length;
                     obj.totalPages = Math.ceil(obj.totalRows / per_page);
                     obj.page = page;
-                } else {
+                } else
                     obj.page = obj.totalRows = null;
-                }
-
-                obj.data.forEach(x => x.route = `${req.route.path}${x.CargoId}`);
+                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[_KEY]}`);
                 resolve(obj);
             }).catch(err => {
                 reject(err);
@@ -107,4 +77,4 @@ const getCargos = (req) => {
 };
 //#endregion
 
-exports.getCargos = getCargos;
+exports.get = get;
