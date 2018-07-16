@@ -5,14 +5,11 @@ require('dotenv').config({
 
 const _TABLE_NAME = 'dbo.Cargos';
 const _KEY = 'CargoId';
-
+const _MAX_PER_PAGE = process.env.MAX_PER_PAGE;
 
 //#region  GET
 
 const getCargos = (req) => {
-
-
-
     let paginated = false;
     if (req.query.page !== undefined || req.query.per_page !== undefined)
         paginated = true;
@@ -24,18 +21,13 @@ const getCargos = (req) => {
         req.query.sort !== undefined ? sortString = req.query.sort : sortString = `${ _KEY} ASC`;
 
         if (paginated) {
-            if (+req.query.per_page > process.env.MAX_PER_PAGE) {
+            if (+req.query.per_page > _MAX_PER_PAGE) {
                 return new Promise((resolve, reject) => {
-                    reject(`No mas de ${process.env.MAX_PER_PAGE} por pagina`);
+                    reject(`No mas de ${_MAX_PER_PAGE} por pagina`);
                 });
             }
-
             let page = req.query.page !== undefined ? req.query.page : 1;
-
-            let per_page = req.query.per_page !== undefined ? req.query.per_page : process.env.MAX_PER_PAGE;
-
-
-
+            let per_page = req.query.per_page !== undefined ? req.query.per_page : _MAX_PER_PAGE;
             queryString = `ORDER BY ${sortString} OFFSET ${(page - 1) * per_page} ROWS FETCH NEXT ${per_page} ROWS ONLY`;
         } else
             queryString = `ORDER BY ${sortString}`;
@@ -45,16 +37,19 @@ const getCargos = (req) => {
         totalRows: 0,
         data: []
     };
-
-    queryString = `SELECT * FROM ${_TABLE_NAME} ${queryString}`;
-
-    console.log(queryString);
+    queryString = `SELECT
+                    SUM(s.row_count) AS totalRows
+                    FROM sys.dm_db_partition_stats s
+                    WHERE s.[object_id] = OBJECT_ID('${_TABLE_NAME}')
+                    AND s.index_id < 2
+                    SELECT * FROM ${_TABLE_NAME} ${queryString}`;
 
     return new Promise((resolve, reject) => {
         new sql.Request()
             .query(queryString)
             .then(data => {
-                obj.data = data.recordset;
+                obj = data.recordsets[0][0];
+                obj.data = data.recordsets[1];
                 obj.data.forEach(x => x.route = `${req.route.path}${ x.CargoId}`);
 
                 resolve(obj);
@@ -62,74 +57,7 @@ const getCargos = (req) => {
                 reject(err);
             });
     });
-
-    /* executeQuery(queryString).then((data) => {
-        obj.data = data;
-        obj.data.forEach(x => x.url = urlById(req.route.path, x.DepartamentoId));
-        executeQuery(`SELECT COUNT_BIG (*) AS totalRows FROM ${_DB_NAME}`).then((rowsCount) => {
-            obj.totalRows = rowsCount[0].totalRows;
-            res.send(200, obj);
-            next();
-        }, (err) => {
-            next(console.log(err));
-        });
-    }, (err) => {
-        next(console.log(err));
-    }); */
 };
-
-/*  getCargos(req) {
-     return new Promise((resolve, reject) => {
-
-         resolve('ok');
-     }).catch(err => {
-         reject(err);
-     });
- } */
-
-/* getCargos(req) {
-
-    let queryString = '';
-
-    if (Object.keys(req.query).length !== 0) {
-        let sortString = '';
-        req.query.sort !== undefined ? sortString = req.query.sort : sortString = `${_KEY} ASC`;
-
-        if (req.query.page !== undefined || req.query.per_page !== undefined) {
-            if (req.query.per_page > config.max_per_page) {
-                res.send(400, `No mas de ${process.env.MAX_PER_PAGE} por pagina`);
-                next();
-            }
-            let page = req.query.page !== undefined ? req.query.page : 1;
-            let per_page = req.query.per_page !== undefined ? req.query.per_page : process.env.MAX_PER_PAGE;
-
-            queryString = `ORDER BY ${sortString} OFFSET ${(page - 1) * per_page} ROWS FETCH NEXT ${per_page} ROWS ONLY`;
-        } else
-            queryString = `ORDER BY ${sortString}`;
-    }
-
-    let obj = {
-        totalRows: 0,
-        data: []
-    };
-
-    queryString = `SELECT * FROM ${_DB_NAME} ${queryString}`;
-
-    executeQuery(queryString).then((data) => {
-        obj.data = data;
-        obj.data.forEach(x => x.url = urlById(req.route.path, x.DepartamentoId));
-        executeQuery(`SELECT COUNT(${_KEY}) AS totalRows FROM dbo.Departamentos`).then((rowsCount) => {
-            obj.totalRows = rowsCount[0].totalRows;
-            res.send(200, obj);
-            next();
-        }, (err) => {
-            next(console.log(err));
-        });
-    }, (err) => {
-        next(console.log(err));
-    });        
-} */
 //#endregion
-
 
 exports.getCargos = getCargos;
