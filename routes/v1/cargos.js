@@ -1,3 +1,6 @@
+require('dotenv').config({
+    path: 'env.env',
+});
 const restifyRouter = require('restify-router').Router;
 const tracer = require('../../common/tracer')({});
 const {
@@ -10,7 +13,7 @@ const repo = require('../../repo/controller');
 
 router.get('/', (req, res, next) => {
     repo
-        .get(req,'dbo.Cargos','CargoId')
+        .get(req, 'dbo.Cargos', 'CargoId', process.env.MAX_PER_PAGE)
         .then((data) => {
             tracer.trackTrace(`cargos`);
             tracer.trackEvent('cargos');
