@@ -1,32 +1,37 @@
 const sql = require('mssql'); // MS Sql Server client
 
-let _TABLE_NAME = '';
-let _KEY = '';
-
-let queries = {
-    page: null,
-    per_page: null,
-    orden: null,
-    filter: null
-};
-
 //#region  GET
 
 const get = (req, tableName, key, maxPerPage) => {
 
+    let _TABLE_NAME = tableName;
+    let _KEY = key;
+
+    let queries = {
+        page: null,
+        per_page: null,
+        orden: null,
+        filter: null
+    };
+
+    //console.log(req.query);
+
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
             queries[queryName] = req.query[queryName];
-        else
-            throw new Error('Invalid query');
+        /*   else
+              throw new Error('Invalid query'); */
     });
 
-    _TABLE_NAME = tableName;
-    _KEY = key;
+    //console.log(queries);
+
     let paginate = false;
     let queryString = '';
+    let fieldsString = '*';
+    let filterString = '';
 
-    console.log(queries);
+
+    let sortString = queries.orden ? queries.orden : `${ _KEY} ASC`;
 
     if (queries.page !== null || queries.per_page !== null) {
         paginate = true;
@@ -37,29 +42,29 @@ const get = (req, tableName, key, maxPerPage) => {
                 reject(`No mas de ${maxPerPage} por pagina`);
             });
         }
-
-        let sortString = queries.orden ? queries.orden : `${ _KEY} ASC`;
         queryString = `ORDER BY ${sortString} OFFSET ${(queries.page - 1) * queries.per_page} ROWS FETCH NEXT ${queries.per_page} ROWS ONLY`;
-    } else if (queries.orden !== null)
+    } else if (queries.orden)
         queryString = `ORDER BY ${sortString}`;
 
-    let fieldsString = '*';
+
     let obj = {
         totalRows: null,
         totalPages: null,
         data: []
     };
 
-    let totalRowsQuery = paginate ?
-        `SELECT SUM(s.row_count) AS totalRows
-        FROM sys.dm_db_partition_stats s
-        WHERE s.[object_id] = OBJECT_ID('${_TABLE_NAME}')
-        AND s.index_id < 2` : `SELECT NULL AS totalRows`;
+    let totalRowsQuery = `SELECT NULL AS totalRows`;
+    if (queries.filter) {
+        filterString = `WHERE ${queries.filter.split(':').join('=').split('(*)').join('%')}`;
+        totalRowsQuery = `SELECT COUNT_BIG(*) AS totalRows
+        FROM ${_TABLE_NAME} ${filterString}`;
+    } else if (paginate)
+        totalRowsQuery = `SELECT SUM(s.row_count) AS totalRows
+                            FROM sys.dm_db_partition_stats s
+                            WHERE s.[object_id] = OBJECT_ID('${_TABLE_NAME}')
+                            AND s.index_id < 2`;
 
-    queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${_TABLE_NAME} ${queryString}`;
-
-    if (queries.filter)
-        queryString += `WHERE ${queries.filter.split(':').join('=')}`;
+    queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${_TABLE_NAME} ${filterString} ${queryString}`;
 
     console.log(queryString);
 
