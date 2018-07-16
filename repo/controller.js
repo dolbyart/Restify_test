@@ -58,7 +58,8 @@ const get = (req, tableName, key, maxPerPage) => {
 
     queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${_TABLE_NAME} ${queryString}`;
 
-    queryString += `WHERE ${queries.filter.split(':').join('=')}`;
+    if (queries.filter)
+        queryString += `WHERE ${queries.filter.split(':').join('=')}`;
 
     console.log(queryString);
 
