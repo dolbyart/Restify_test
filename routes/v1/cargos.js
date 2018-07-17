@@ -28,7 +28,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
     repo
-        .getById(+req.params.id)
+        .getById(+req.params.id, req, 'dbo.Cargos', 'CargoId')
         .then((data) => {
             tracer.trackTrace('getCargoById');
             tracer.trackEvent('getCargoById');

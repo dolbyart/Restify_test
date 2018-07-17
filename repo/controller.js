@@ -1,5 +1,12 @@
 const sql = require('mssql'); // MS Sql Server client
 
+
+function CheckFiledKey(fields, key) {
+    let f = fields.split(' ').join('').split(',');
+    !f.includes(key) ? f.push(key) : null;
+    return f.join(',');
+}
+
 //#region  GET
 
 const get = (req, tableName, maxPerPage, key) => {
@@ -15,7 +22,7 @@ const get = (req, tableName, maxPerPage, key) => {
         fields: null
     };
 
-    console.log(req.query);
+    //console.log(req.query);
 
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
@@ -24,22 +31,18 @@ const get = (req, tableName, maxPerPage, key) => {
             throw new Error('Invalid query');
     });
 
-    console.log(queries);
+    //console.log(queries);
 
     let paginate = false;
     let queryString = '';
 
     let fieldsString = '';
-    if (queries.fields) {
-        let f = queries.fields.split(' ').join('').split(',');
-        !f.includes(key) ? f.push(key) : null;
-        fieldsString = f.join(',');
-    } else
+    if (queries.fields)
+        fieldsString = CheckFiledKey(queries.fields, key);
+    else
         fieldsString = '*';
 
     let filterString = '';
-
-    console.log(fieldsString);
 
     /*  try {
          new sql.Request()
@@ -78,13 +81,6 @@ const get = (req, tableName, maxPerPage, key) => {
     } else if (queries.orden)
         queryString = `ORDER BY ${sortString}`;
 
-
-    let obj = {
-        totalRows: null,
-        totalPages: null,
-        data: []
-    };
-
     let totalRowsQuery = `SELECT NULL AS totalRows`;
     if (queries.filter) {
         filterString = `WHERE ${queries.filter.split(':').join('=').split('(*)').join('%')}`;
@@ -100,6 +96,11 @@ const get = (req, tableName, maxPerPage, key) => {
 
     console.log(queryString);
 
+    let obj = {
+        totalRows: null,
+        totalPages: null,
+        data: []
+    };
     return new Promise((resolve, reject) => {
 
         new sql.Request()
@@ -126,4 +127,43 @@ const get = (req, tableName, maxPerPage, key) => {
 };
 //#endregion
 
+
+const getById = (id, req, tableName, key) => {
+
+    let _TABLE_NAME = tableName;
+    let _KEY = key;
+
+    let fieldsString = '';
+    if (req.query.fields)
+        fieldsString = CheckFiledKey(req.query.fields, key);
+    else
+        fieldsString = '*';
+
+    const queryString = `
+       SELECT * FROM(
+        SELECT ${fieldsString},
+        LAG(${_KEY}) OVER (ORDER BY ${_KEY}) AS prevUrl,
+        LEAD(${_KEY}) OVER (ORDER BY ${_KEY}) AS nextUrl
+        FROM ${_TABLE_NAME}
+       ) x WHERE ${_KEY} = @Id`;
+
+    console.log(queryString);
+
+    return new Promise((resolve, reject) => {
+        new sql.Request()
+            .input('Id', sql.BigInt, id)
+            .query(queryString)
+            .then((data) => {
+                let obj = data.recordset[0];
+                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}` : null;
+                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}` : null;
+                resolve(obj);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+};
+
 exports.get = get;
+exports.getById = getById;
