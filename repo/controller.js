@@ -2,7 +2,7 @@ const sql = require('mssql'); // MS Sql Server client
 
 //#region  GET
 
-const get = (req, tableName, key, maxPerPage) => {
+const get = (req, tableName, maxPerPage, key) => {
 
     let _TABLE_NAME = tableName;
     let _KEY = key;
@@ -11,7 +11,8 @@ const get = (req, tableName, key, maxPerPage) => {
         page: null,
         per_page: null,
         orden: null,
-        filter: null
+        filter: null,
+        fields: null
     };
 
     //console.log(req.query);
@@ -19,8 +20,8 @@ const get = (req, tableName, key, maxPerPage) => {
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
             queries[queryName] = req.query[queryName];
-        /*   else
-              throw new Error('Invalid query'); */
+        else
+            throw new Error('Invalid query');
     });
 
     //console.log(queries);
@@ -30,17 +31,38 @@ const get = (req, tableName, key, maxPerPage) => {
     let fieldsString = '*';
     let filterString = '';
 
+    /*  try {
+         new sql.Request()
+             .query(`SELECT ccu.COLUMN_NAME AS primaryKey
+             FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS tc INNER JOIN
+             INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON tc.CONSTRAINT_NAME = ccu.CONSTRAINT_NAME
+             WHERE (tc.CONSTRAINT_TYPE = 'Primary Key') AND (tc.TABLE_NAME = '${_TABLE_NAME}')`)
+             .then(data => {
+                 _KEY = data;
+             }).catch(err => {
+                 reject(err);
+             });
+     } catch (error) {
+         throw new Error(error);
+     } */
 
-    let sortString = queries.orden ? queries.orden : `${ _KEY} ASC`;
+    /* _KEY = key === undefined ? `SELECT COLUMN_NAME
+                                FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+                                WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + QUOTENAME(CONSTRAINT_NAME)), 'IsPrimaryKey') = 1
+                                AND TABLE_NAME = '${_TABLE_NAME}' AND TABLE_SCHEMA = 'Schema'` : key; */
 
-    if (queries.page !== null || queries.per_page !== null) {
+
+    let sortString = queries.orden ? queries.orden : `(${_KEY})`;
+
+    if (queries.page || queries.per_page) {
         paginate = true;
         if (!queries.per_page)
             queries.per_page = maxPerPage;
         if (+queries.per_page > maxPerPage) {
-            return new Promise((resolve, reject) => {
+            throw new Error(`No mas de ${maxPerPage} por pagina`);
+            /* return new Promise((resolve, reject) => {
                 reject(`No mas de ${maxPerPage} por pagina`);
-            });
+            }); */
         }
         queryString = `ORDER BY ${sortString} OFFSET ${(queries.page - 1) * queries.per_page} ROWS FETCH NEXT ${queries.per_page} ROWS ONLY`;
     } else if (queries.orden)
@@ -84,6 +106,7 @@ const get = (req, tableName, key, maxPerPage) => {
                     obj.page = queries.page ? +queries.page : 1;
                 } else
                     obj.page = obj.totalRows = null;
+
                 obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[_KEY]}`);
                 resolve(obj);
             }).catch(err => {

@@ -13,7 +13,7 @@ const repo = require('../../repo/controller');
 
 router.get('/', (req, res, next) => {
     repo
-        .get(req, 'dbo.Cargos', 'CargoId', process.env.MAX_PER_PAGE)
+        .get(req, 'dbo.Cargos', process.env.MAX_PER_PAGE, 'CargoId')
         .then((data) => {
             tracer.trackTrace(`cargos`);
             tracer.trackEvent('cargos');
