@@ -15,20 +15,20 @@ router.get('/', (req, res, next) => {
     repo
         .get(req, 'dbo.Cargos', process.env.MAX_PER_PAGE, 'CargoId')
         .then((data) => {
-            tracer.trackTrace(`cargos`);
-            tracer.trackEvent('cargos');
+            tracer.trackTrace(`getCargos`);
+            tracer.trackEvent('getCargos');
             res.send(200, data);
         })
         .catch((err) => {
-            tracer.trackEvent('cargosException');
+            tracer.trackEvent('getCargosException');
             tracer.trackException(err);
             res.send(500, error.internal);
         });
 });
 
 router.get('/:id', (req, res, next) => {
-    paisesRepo
-        .getCargoById(+req.params.id)
+    repo
+        .getById(+req.params.id)
         .then((data) => {
             tracer.trackTrace('getCargoById');
             tracer.trackEvent('getCargoById');

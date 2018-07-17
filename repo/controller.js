@@ -15,7 +15,7 @@ const get = (req, tableName, maxPerPage, key) => {
         fields: null
     };
 
-    //console.log(req.query);
+    console.log(req.query);
 
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
@@ -24,12 +24,22 @@ const get = (req, tableName, maxPerPage, key) => {
             throw new Error('Invalid query');
     });
 
-    //console.log(queries);
+    console.log(queries);
 
     let paginate = false;
     let queryString = '';
-    let fieldsString = '*';
+
+    let fieldsString = '';
+    if (queries.fields) {
+        let f = queries.fields.split(' ').join('').split(',');
+        !f.includes(key) ? f.push(key) : null;
+        fieldsString = f.join(',');
+    } else
+        fieldsString = '*';
+
     let filterString = '';
+
+    console.log(fieldsString);
 
     /*  try {
          new sql.Request()
