@@ -7,7 +7,7 @@ function CheckFiledKey(fields, key) {
     return f.join(',');
 }
 
-//#region  GET
+//#region GET
 
 const get = (req, tableName, maxPerPage, key) => {
 
@@ -21,8 +21,6 @@ const get = (req, tableName, maxPerPage, key) => {
         filter: null,
         fields: null
     };
-
-    //console.log(req.query);
 
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
@@ -125,8 +123,6 @@ const get = (req, tableName, maxPerPage, key) => {
             });
     });
 };
-//#endregion
-
 
 const getById = (id, req, tableName, key) => {
 
@@ -164,6 +160,18 @@ const getById = (id, req, tableName, key) => {
             });
     });
 };
+//#endregion
 
+//#region POST
+
+//#endregion
+
+//#region PUT
+
+//#endregion
+
+//#region DELETE
+
+//#endregion
 exports.get = get;
 exports.getById = getById;

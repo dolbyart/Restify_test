@@ -41,5 +41,33 @@ router.get('/:id', (req, res, next) => {
         });
 });
 
+router.post('', async (req, res, next) => {
+    try {
+        const endoso = buildDataEndoso(req, false);
+        const errors = validateEndoso(endoso);
+
+        if (errors) {
+            res.send(400, {
+                result: errors
+            });
+            return;
+        }
+
+        const newEndosoId = await endosoRepositorio.create(endoso);
+        auditLog.createLog(req, res, newEndosoId, {
+            newEndosoId
+        });
+
+        res.send(201, {
+            newEndosoId
+        });
+    } catch (err) {
+        tracer.trackEvent('createEndosoException');
+        tracer.trackException(err);
+
+        res.send(500, error.internal);
+    }
+});
+
 
 module.exports = router;
