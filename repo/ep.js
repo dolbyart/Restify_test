@@ -18,20 +18,18 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
         orden: null,
         filter: null,
         fields: null,
-        tbl: null,
+        t: null,
         key: null
     };
 
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
             queries[queryName] = req.query[queryName];
-        /*   else
-              throw new Error('Invalid query'); */
     });
 
     //console.log(queries);
 
-    const TABLE_NAME = `dbo.${queries.tbl}`;
+    const TABLE_NAME = `dbo.${queries.t}`;
 
     const KEY = queries.key;
 
@@ -101,7 +99,7 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
                 } else
                     obj.page = obj.totalRows = null;
 
-                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[KEY]}?tbl=${TABLE_NAME}&key=${KEY}`);
+                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[KEY]}?t=${TABLE_NAME}&key=${KEY}`);
                 resolve(obj);
             }).catch(err => {
                 reject(err);
@@ -113,7 +111,7 @@ const getById = (id, req /* , tableName, key */ ) => {
 
     let queries = {
         fields: null,
-        tbl: null,
+        t: null,
         key: null
     };
 
@@ -123,7 +121,7 @@ const getById = (id, req /* , tableName, key */ ) => {
         /*   else
               throw new Error('Invalid query'); */
     });
-    const TABLE_NAME = queries.tbl;
+    const TABLE_NAME = queries.t;
     const KEY = queries.key;
 
     let fieldsString = '';
@@ -148,8 +146,8 @@ const getById = (id, req /* , tableName, key */ ) => {
             .query(queryString)
             .then((data) => {
                 let obj = data.recordset[0];
-                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}?tbl=${TABLE_NAME}&key=${KEY}` : null;
-                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}?tbl=${TABLE_NAME}&key=${KEY}` : null;
+                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}?t=${TABLE_NAME}&key=${KEY}` : null;
+                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}?t=${TABLE_NAME}&key=${KEY}` : null;
                 resolve(obj);
             })
             .catch((err) => {
