@@ -1,7 +1,7 @@
 {
     "TableName": "PersonaDocumento",
     "Schema": "dbo",
-    "Access": [0],
+    "Access": [0,1],
     "Data": [{
         "ColName": "PersonaId",
         "Access": []
