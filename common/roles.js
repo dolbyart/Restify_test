@@ -1,6 +1,7 @@
 const roles = {
-    Admin: 0,
-    Developer: 1,
+    Public: -1,
+    Developer: 0,
+    Admin: 1,
     Usuario: 2
 };
 

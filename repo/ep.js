@@ -138,7 +138,7 @@ const getById = (id, req /* , tableName, key */ ) => {
         LAG(${KEY}) OVER (ORDER BY ${KEY}) AS prevUrl,
         LEAD(${KEY}) OVER (ORDER BY ${KEY}) AS nextUrl
         FROM ${TABLE_NAME}
-       ) x WHERE ${KEY} = @Id`;
+       ) u WHERE ${KEY} = @Id`;
 
     console.log(queryString);
 
