@@ -11,7 +11,7 @@ router.add('/endoso', require('./endoso'));
 router.add('/swagger', require('./swagger'));
 router.add('/unidad', require('./unidad')); */
 
-router.add('/cargos', require('./cargos'));
+router.add('/ep', require('./ep'));
 
 
 module.exports = router;

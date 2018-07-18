@@ -11,8 +11,6 @@ require('./helpers/config.db').connect();
 const tracer = require('./common/tracer')({});
 const serverUse = require('./server.use');
 
-const repo = require('./repo/controller');
-
 moment.locale('es');
 
 const server = restify.createServer({

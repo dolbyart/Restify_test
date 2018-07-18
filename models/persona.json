@@ -1,0 +1,45 @@
+{
+    "TableName": "Persona",
+    "Schema": "dbo",
+    "Access": [0, 1, 2],
+    "Data": [{
+        "ColName": "Id",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "SexoId",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "FechaNacimiento",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "LugarNacimiento",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "LugarNacimiento",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "GeneroId",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "EstadoCivilId",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "Vigente",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "Fecha",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "TipoId",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "FechaDefuncion",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "EscolaridadId",
+        "Access": [0, 1, 2]
+    }, {
+        "ColName": "NacionalidadId",
+        "Access": [0, 1, 2]
+    }]
+}

@@ -5,6 +5,6 @@ require('dotenv').config({
 
 const router = new restifyRouter();
 
-router.add(`/${process.env.API_VERSION}`, require(`./${process.env.API_VERSION}/routes`));
+router.add('/v1', require('./v1/routes'));
 
 module.exports = router;

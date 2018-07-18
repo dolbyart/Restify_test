@@ -1,5 +1,4 @@
-const sql = require('mssql'); // MS Sql Server client
-
+const sql = require('mssql');
 
 function CheckFiledKey(fields, key) {
     let f = fields.split(' ').join('').split(',');
@@ -9,72 +8,58 @@ function CheckFiledKey(fields, key) {
 
 //#region GET
 
-const get = (req, tableName, maxPerPage, key) => {
+const get = (req, maxPerPage /*,  tableName, key */ ) => {
 
-    let _TABLE_NAME = tableName;
-    let _KEY = key;
+    //console.log(req.query);
 
     let queries = {
         page: null,
         per_page: null,
         orden: null,
         filter: null,
-        fields: null
+        fields: null,
+        tbl: null,
+        key: null
     };
 
     Object.keys(req.query).forEach(queryName => {
         if (Object.keys(queries).includes(queryName))
             queries[queryName] = req.query[queryName];
-        else
-            throw new Error('Invalid query');
+        /*   else
+              throw new Error('Invalid query'); */
     });
 
     //console.log(queries);
+
+    const TABLE_NAME = `dbo.${queries.tbl}`;
+
+    const KEY = queries.key;
 
     let paginate = false;
     let queryString = '';
 
     let fieldsString = '';
     if (queries.fields)
-        fieldsString = CheckFiledKey(queries.fields, key);
+        fieldsString = CheckFiledKey(queries.fields, KEY);
     else
         fieldsString = '*';
 
     let filterString = '';
 
-    /*  try {
-         new sql.Request()
-             .query(`SELECT ccu.COLUMN_NAME AS primaryKey
-             FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS tc INNER JOIN
-             INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE AS ccu ON tc.CONSTRAINT_NAME = ccu.CONSTRAINT_NAME
-             WHERE (tc.CONSTRAINT_TYPE = 'Primary Key') AND (tc.TABLE_NAME = '${_TABLE_NAME}')`)
-             .then(data => {
-                 _KEY = data;
-             }).catch(err => {
-                 reject(err);
-             });
-     } catch (error) {
-         throw new Error(error);
-     } */
-
-    /* _KEY = key === undefined ? `SELECT COLUMN_NAME
-                                FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-                                WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + '.' + QUOTENAME(CONSTRAINT_NAME)), 'IsPrimaryKey') = 1
-                                AND TABLE_NAME = '${_TABLE_NAME}' AND TABLE_SCHEMA = 'Schema'` : key; */
-
-
-    let sortString = queries.orden ? queries.orden : `(${_KEY})`;
+    let sortString = queries.orden ? queries.orden : `(${KEY})`;
 
     if (queries.page || queries.per_page) {
         paginate = true;
         if (!queries.per_page)
             queries.per_page = maxPerPage;
-        if (+queries.per_page > maxPerPage) {
-            throw new Error(`No mas de ${maxPerPage} por pagina`);
-            /* return new Promise((resolve, reject) => {
-                reject(`No mas de ${maxPerPage} por pagina`);
-            }); */
-        }
+        /*  if (+queries.per_page > maxPerPage) {
+             throw new Error(`No mas de ${maxPerPage} por pagina`);
+             return new Promise((resolve, reject) => {
+                 reject(`No mas de ${maxPerPage} por pagina`);
+             });
+         } */
+        if (!queries.page)
+            queries.page = 1;
         queryString = `ORDER BY ${sortString} OFFSET ${(queries.page - 1) * queries.per_page} ROWS FETCH NEXT ${queries.per_page} ROWS ONLY`;
     } else if (queries.orden)
         queryString = `ORDER BY ${sortString}`;
@@ -83,14 +68,14 @@ const get = (req, tableName, maxPerPage, key) => {
     if (queries.filter) {
         filterString = `WHERE ${queries.filter.split(':').join('=').split('(*)').join('%')}`;
         totalRowsQuery = `SELECT COUNT_BIG(*) AS totalRows
-        FROM ${_TABLE_NAME} ${filterString}`;
+        FROM ${TABLE_NAME} ${filterString}`;
     } else if (paginate)
         totalRowsQuery = `SELECT SUM(s.row_count) AS totalRows
                             FROM sys.dm_db_partition_stats s
-                            WHERE s.[object_id] = OBJECT_ID('${_TABLE_NAME}')
+                            WHERE s.[object_id] = OBJECT_ID('${TABLE_NAME}')
                             AND s.index_id < 2`;
 
-    queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${_TABLE_NAME} ${filterString} ${queryString}`;
+    queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${TABLE_NAME} ${filterString} ${queryString}`;
 
     console.log(queryString);
 
@@ -116,7 +101,7 @@ const get = (req, tableName, maxPerPage, key) => {
                 } else
                     obj.page = obj.totalRows = null;
 
-                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[_KEY]}`);
+                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[KEY]}?tbl=${TABLE_NAME}&key=${KEY}`);
                 resolve(obj);
             }).catch(err => {
                 reject(err);
@@ -124,24 +109,36 @@ const get = (req, tableName, maxPerPage, key) => {
     });
 };
 
-const getById = (id, req, tableName, key) => {
+const getById = (id, req /* , tableName, key */ ) => {
 
-    let _TABLE_NAME = tableName;
-    let _KEY = key;
+    let queries = {
+        fields: null,
+        tbl: null,
+        key: null
+    };
+
+    Object.keys(req.query).forEach(queryName => {
+        if (Object.keys(queries).includes(queryName))
+            queries[queryName] = req.query[queryName];
+        /*   else
+              throw new Error('Invalid query'); */
+    });
+    const TABLE_NAME = queries.tbl;
+    const KEY = queries.key;
 
     let fieldsString = '';
-    if (req.query.fields)
-        fieldsString = CheckFiledKey(req.query.fields, key);
+    if (queries.fields)
+        fieldsString = CheckFiledKey(queries.fields, KEY);
     else
         fieldsString = '*';
 
     const queryString = `
-       SELECT * FROM(
+       SELECT TOP 1 * FROM(
         SELECT ${fieldsString},
-        LAG(${_KEY}) OVER (ORDER BY ${_KEY}) AS prevUrl,
-        LEAD(${_KEY}) OVER (ORDER BY ${_KEY}) AS nextUrl
-        FROM ${_TABLE_NAME}
-       ) x WHERE ${_KEY} = @Id`;
+        LAG(${KEY}) OVER (ORDER BY ${KEY}) AS prevUrl,
+        LEAD(${KEY}) OVER (ORDER BY ${KEY}) AS nextUrl
+        FROM ${TABLE_NAME}
+       ) x WHERE ${KEY} = @Id`;
 
     console.log(queryString);
 
@@ -151,8 +148,8 @@ const getById = (id, req, tableName, key) => {
             .query(queryString)
             .then((data) => {
                 let obj = data.recordset[0];
-                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}` : null;
-                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}` : null;
+                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}?tbl=${TABLE_NAME}&key=${KEY}` : null;
+                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}?tbl=${TABLE_NAME}&key=${KEY}` : null;
                 resolve(obj);
             })
             .catch((err) => {
