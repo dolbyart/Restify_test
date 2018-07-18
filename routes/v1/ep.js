@@ -9,21 +9,64 @@ const {
 const router = new restifyRouter();
 
 const repo = require('../../repo/ep');
-const tablesModelrepo = require('../../repo/tables_model');
+const tablesModelrepo = require('../../repo/tables');
 const userRole = require('../../common/user_role');
+const fs = require('fs');
 
 
-router.get('/gm/:tableName', (req, res, next) => {
-    console.log(userRole.GetUserRole());
+router.get('/gm/', (req, res, next) => {
+    const role = userRole.GetUserRole();
+    let tables = req.query.t.toLowerCase().split(' ').join('').split(',');
+
+    let allowedTables = [];
+    tables.forEach(table => {
+        try {
+            console.log(table);
+            if (require(`../../models/${table}.json`).Access.includes(role))
+                allowedTables.push(table);
+        } catch (error) {
+
+        }
+
+    });
+
+    /*  let models = [];
+     fs.readdirSync(`${process.cwd()}/models/`).forEach(file => {
+         if (require(`../../models/${file}`).Access.includes(role))
+             models.push(file.replace(/\.[^/.]+$/, ""));
+     }); */
+
+    //console.log(models);
+    console.log(allowedTables);
+
     tablesModelrepo
-        .get(req.params.tableName)
+        .get(tables)
         .then((data) => {
             tracer.trackTrace('getTableModel');
             tracer.trackEvent('getTableModel');
+
+            try {
+                let model = require(`../../models/${data.TableName}.json`);
+
+                /* //DEV JSON CREATION 
+                let model = {
+                    Access: [0]
+                };
+                /////////////////// */
+
+                if (model.Access.includes(userRole.GetUserRole())) {
+                    res.send(200, data);
+                } else
+                    res.send(401, 'No tiene permiso');
+            } catch (err) {
+                res.send(401, 'No tiene permiso');
+            }
+
+            //console.log(model);
             //if (data.Access.includes(userRole.GetUserRole()))
-            res.send(200, data)
+
             /* else
-                res.send(401, 'No tiene permiso'); */
+             */
         })
         .catch((err) => {
             tracer.trackEvent('getTableModelException');
