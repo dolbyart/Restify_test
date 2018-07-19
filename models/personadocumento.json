@@ -3,7 +3,7 @@
     "Schema": "dbo",
     "Allow": [{
         "Users": [],
-        "Roles": [],
+        "Roles": [-1],
         "Groups": []
     }],
     "Columns": [{

@@ -9,41 +9,50 @@ const {
 const router = new restifyRouter();
 
 const repo = require("../../repo/ep");
-const tablesModelrepo = require("../../repo/models");
+const modelsRepo = require("../../repo/models");
 const userRole = require("../../common/user_role");
-var _ = require('lodash');
+const _ = require('lodash');
+const chalk = require('chalk');
 
-router.get("/metadata/", (req, res, next) => {
-    const role = userRole.GetUserRole();
+router.get('/createmodels/', (req, res, next) => {
     let tables = [];
     let allowedTables = [];
-
-    console.log(req.query.t);
-
-    tables = req.query.t
+    tables = req.query.table
         .toLowerCase()
         .split(" ")
         .join("")
         .split(",");
-    console.log(tables);
+    model = req.query.model
+        .toLowerCase()
+        .split(" ")
+        .join("")
+        .split(",");
+    console.log(chalk.blue('Table: ', table, '  Model: ', model));
+
+});
+
+router.get('/metadata/', (req, res, next) => {
+    const role = userRole.GetUserRole();
+
+    let tables = req.query.tables
+        .toLowerCase()
+        .split(" ")
+        .join("")
+        .split(",");
 
     tables.forEach(table => {
         try {
-            /*  const intersectwith = (f, xs, ys) => xs.filter(x => ys.some(y => f(x, y)));
-             const equals = (x, y) => x === y; 
-             console.log(intersectwith(equals, [role, -1], model)); */
-
-
             if (_.intersection([role, -1], require(`../../models/${table}.json`).Allow.Roles).length > 0)
                 allowedTables.push(table);
         } catch (error) {}
     });
 
     console.log(allowedTables);
+
     if (allowedTables.length > 0) {
 
-        tablesModelrepo
-            .getModel(allowedTables)
+        modelsRepo
+            .getTable(allowedTables)
             .then(data => {
                 tracer.trackTrace("getTableModel");
                 tracer.trackEvent("getTableModel");
@@ -86,12 +95,12 @@ router.get("/", (req, res, next) => {
     repo
         .get(req, MAX_PER_PAGE /*, 'CargoId' */ )
         .then(data => {
-            tracer.trackTrace(`get${req.query.tbl}`);
-            tracer.trackEvent(`get${req.query.tbl}`);
+            tracer.trackTrace(`get${req.query.t}`);
+            tracer.trackEvent(`get${req.query.t}`);
             res.send(200, data);
         })
         .catch(err => {
-            tracer.trackEvent(`get${req.query.tbl}Exception`);
+            tracer.trackEvent(`get${req.query.t}Exception`);
             tracer.trackException(err);
             res.send(500, error.internal);
         });

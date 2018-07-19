@@ -1,54 +1,219 @@
 {
+    "ModelName": "PersonaDomicilio",
     "TableName": "PersonaDomicilio",
     "Schema": "dbo",
-    "Access": [-1],
-    "Data": [{
+    "Allow": {
+        "Users": [],
+        "Roles": [-1],
+        "Groups": []
+    },
+    "Columns": [{
         "ColName": "Id",
-        "Access": []
+        "IdKey": true,
+        "ColType": "bigint",
+        "TypeL": 8,
+        "IsNull": false,
+        "Def": null,
+        "ModelColName": "Id",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "PersonaId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bigint",
+        "TypeL": 8,
+        "IsNull": false,
+        "Def": null,
+        "ModelColName": "PersonaId",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Coordenadas",
-        "Access": []
+        "IdKey": false,
+        "ColType": "geometry",
+        "TypeL": -1,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Coordenadas",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Fecha",
-        "Access": []
+        "IdKey": false,
+        "ColType": "datetime",
+        "TypeL": 8,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Fecha",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Vigente",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bit",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Vigente",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "EsPrimario",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bit",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "EsPrimario",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "ComunaId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "smallint",
+        "TypeL": 2,
+        "IsNull": false,
+        "Def": null,
+        "ModelColName": "ComunaId",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Numero",
-        "Access": []
+        "IdKey": false,
+        "ColType": "smallint",
+        "TypeL": 2,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Numero",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Villa",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Villa",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Poblacion",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Poblacion",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Departamento",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Departamento",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Parcela",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Parcela",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Calle",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Calle",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "Referencia",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "Referencia",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "JsonGeolocalizacion",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "JsonGeolocalizacion",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }, {
         "ColName": "TipoPersonaDomicilioId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "smallint",
+        "TypeL": 2,
+        "IsNull": true,
+        "Def": null,
+        "ModelColName": "TipoPersonaDomicilioId",
+        "Allow": {
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }
     }]
 }

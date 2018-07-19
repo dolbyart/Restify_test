@@ -5,7 +5,13 @@ const {
 var _ = require('lodash');
 const fs = require("fs");
 
-const createModel = (modelName) => {
+const createModel = (modelName, tableName) => {
+  getTable(tablelName).then(data => {
+    let model = require(`../models/${modelName}.json`);
+    console.log(chalk.blue(`${model}`));
+  }).catch(err => {
+    console.log(chalk.red(`Creacion modelo ${modelName} fallido`, err));
+  });
   require(`../models/tables_mapping.json`).find(x => x.ModelName === modelName);
 };
 
@@ -16,10 +22,9 @@ const recreateModels = (modelName) => {
   } catch (err) {
     throw new Error('Modelo no existe');
   }
-
 };
 
-const getModel = tableName => {
+const getTable = tableName => {
 
   //AND(o.name IN('PersonaDocumento', 'Persona'))
 
@@ -68,25 +73,24 @@ const getModel = tableName => {
 
         let obj = {
           ModelName: data.recordsets[0][0].TableName,
-          Model: {
-            TableName: data.recordsets[0][0].TableName,
-            Schema: data.recordsets[0][0].SchemaName,
 
-            //Generate json///////////////////
-            Allow: {
-              Users: [],
-              Roles: [],
-              Groups: []
-            },
-            /////////////////////////////////
+          TableName: data.recordsets[0][0].TableName,
+          Schema: data.recordsets[0][0].SchemaName,
 
-            Columns: data.recordsets[1]
-          }
+          //Generate json///////////////////
+          Allow: {
+            Users: [],
+            Roles: [],
+            Groups: []
+          },
+          /////////////////////////////////
+
+          Columns: data.recordsets[1]
           //Generate json///////////////////
         };
 
-        obj.Model.Columns.forEach(x => {
-          x.ModelColName = obj.ModelName + x.ColName,
+        obj.Columns.forEach(x => {
+          x.ModelColName = x.ColName,
             x.Allow = {
               Users: [],
               Roles: [],
@@ -103,4 +107,4 @@ const getModel = tableName => {
   });
 };
 
-exports.getModel = getModel;
+exports.getTable = getTable;
