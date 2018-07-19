@@ -9,12 +9,11 @@ const {
 const router = new restifyRouter();
 
 const repo = require("../../repo/ep");
-const tablesModelrepo = require("../../repo/tables");
+const tablesModelrepo = require("../../repo/models");
 const userRole = require("../../common/user_role");
-const fs = require("fs");
 var _ = require('lodash');
 
-router.get("/gm/", (req, res, next) => {
+router.get("/metadata/", (req, res, next) => {
     const role = userRole.GetUserRole();
     let tables = [];
     let allowedTables = [];
@@ -26,7 +25,7 @@ router.get("/gm/", (req, res, next) => {
         .split(" ")
         .join("")
         .split(",");
-
+    console.log(tables);
 
     tables.forEach(table => {
         try {
@@ -35,16 +34,16 @@ router.get("/gm/", (req, res, next) => {
              console.log(intersectwith(equals, [role, -1], model)); */
 
 
-            if (_.intersection([role, -1], require(`../../models/${table}.json`).Access).length > 0)
+            if (_.intersection([role, -1], require(`../../models/${table}.json`).Allow.Roles).length > 0)
                 allowedTables.push(table);
         } catch (error) {}
     });
-    //console.log(tables);
+
     console.log(allowedTables);
     if (allowedTables.length > 0) {
 
         tablesModelrepo
-            .get(allowedTables)
+            .getModel(allowedTables)
             .then(data => {
                 tracer.trackTrace("getTableModel");
                 tracer.trackEvent("getTableModel");

@@ -1,8 +1,8 @@
 const {
-    roles
-} = require("./roles");
+    Roles
+} = require('../common/enums');
 const getUserRole = () => {
-    return roles.Developer;
+    return Roles.Developer;
     //return roles.Developer;
     //return roles.Usuario;
 };

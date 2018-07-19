@@ -1,63 +1,238 @@
 {
     "TableName": "PersonaDocumento",
     "Schema": "dbo",
-    "Access": [0,1],
-    "Data": [{
+    "Allow": [{
+        "Users": [],
+        "Roles": [],
+        "Groups": []
+    }],
+    "Columns": [{
         "ColName": "PersonaId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bigint",
+        "TypeL": 8,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Nombres",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Apellido1",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Apellido2",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "TipoDocumentoId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "tinyint",
+        "TypeL": 1,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Numero",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "PaisId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "smallint",
+        "TypeL": 2,
+        "IsNull": false,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Serie",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Dv",
-        "Access": []
+        "IdKey": false,
+        "ColType": "char",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "FechaEmision",
-        "Access": []
+        "IdKey": false,
+        "ColType": "datetime2",
+        "TypeL": 8,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "FechaVencimiento",
-        "Access": []
+        "IdKey": false,
+        "ColType": "datetime2",
+        "TypeL": 8,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "GeneroId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "tinyint",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Fecha",
-        "Access": []
+        "IdKey": false,
+        "ColType": "datetime2",
+        "TypeL": 8,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Vigente",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bit",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "EsPrimario",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bit",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "TipoVisaId",
-        "Access": []
+        "IdKey": false,
+        "ColType": "tinyint",
+        "TypeL": 1,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "NumeroInscripcion",
-        "Access": []
+        "IdKey": false,
+        "ColType": "bigint",
+        "TypeL": 8,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "InscripcionAnio",
-        "Access": []
+        "IdKey": false,
+        "ColType": "int",
+        "TypeL": 4,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }, {
         "ColName": "Profesion",
-        "Access": []
+        "IdKey": false,
+        "ColType": "nvarchar",
+        "TypeL": 8000,
+        "IsNull": true,
+        "Def": null,
+        "Allow": [{
+            "Users": [],
+            "Roles": [],
+            "Groups": []
+        }]
     }]
 }
