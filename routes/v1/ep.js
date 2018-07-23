@@ -45,7 +45,7 @@ router.get('/metadata/', (req, res, next) => {
         try {
             if (_.intersection([role, -1], require(`../../models/${table}.json`).Allow.Roles).length > 0)
                 allowedTables.push(table);
-        } catch (error) {}
+        } catch (error) { }
     });
 
     console.log(allowedTables);
@@ -119,9 +119,10 @@ router.get("/", (req, res, next) => {
     });
     queries.mdl = queries.mdl.toLowerCase();
     queries.table = modelMethods.GetTableName(queries.mdl);
+
     queries.key = modelMethods.GetTableKey(queries.mdl);
     if (queries.fields) {
-        queries.fields=modelMethods.MapFieldToTable(queries.mdl, queries.fields.split(' ').join('').split(',')).join(',');
+        queries.fields = modelMethods.MapFieldToTable(queries.mdl, queries.fields.split(' ').join('').split(',')).join(',');
         /* let f = [];
         queries.fields.split(' ').join('').split(',').forEach(field => {
             f.push(modelMethods.MapFieldToTable(queries.mdl, field));
@@ -131,12 +132,12 @@ router.get("/", (req, res, next) => {
     } else
         queries.fields = '*';
 
-
+    console.log(queries);
 
     repo
         .get(queries)
         .then(data => {
-            
+
             tracer.trackTrace(`get${req.query.mdl}`);
             tracer.trackEvent(`get${req.query.mdl}`);
             res.send(200, data);

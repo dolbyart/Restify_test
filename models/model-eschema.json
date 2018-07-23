@@ -1,0 +1,19 @@
+{
+    "ModelName": "",
+    "Schema": "",
+    "Key": "",
+    "Columns": [
+        {
+            "ColName": "",
+            "IdKey": "",
+            "ColType": "",
+            "TypeL": "",
+            "IsNull": "",
+            "Def": "",
+            "ModelColName": "",
+            "Allow": {
+                "Roles": []
+            }
+        }
+    ]
+}

@@ -5,164 +5,179 @@
     "Key": "Id",
     "Allow": {
         "Users": [],
-        "Roles": [-1],
+        "Roles": [
+            -1
+        ],
         "Groups": []
     },
-    "Columns": [{
-        "ColName": "Id",
-        "IdKey": true,
-        "ColType": "bigint",
-        "TypeL": 8,
-        "IsNull": false,
-        "Def": null,
-        "ModelColName": "Id",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
+    "Columns": [
+        {
+            "ColName": "Id",
+            "IdKey": true,
+            "ColType": "bigint",
+            "TypeL": 8,
+            "IsNull": false,
+            "Def": null,
+            "ModelColName": "Id",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "SexoId",
+            "IdKey": false,
+            "ColType": "tinyint",
+            "TypeL": 1,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "SexoId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "FechaNacimiento",
+            "IdKey": false,
+            "ColType": "datetime2",
+            "TypeL": 8,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "FechaNacimiento",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "Lugar",
+            "IdKey": false,
+            "ColType": "nvarchar",
+            "TypeL": 8000,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "LugarNacimiento",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "GeneroId",
+            "IdKey": false,
+            "ColType": "tinyint",
+            "TypeL": 1,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "GeneroId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "EstadoCivilId",
+            "IdKey": false,
+            "ColType": "tinyint",
+            "TypeL": 1,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "EstadoCivilId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "Vigente",
+            "IdKey": false,
+            "ColType": "bit",
+            "TypeL": 1,
+            "IsNull": false,
+            "Def": null,
+            "ModelColName": "Vigente",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "Fecha",
+            "IdKey": false,
+            "ColType": "datetime2",
+            "TypeL": 8,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "Fecha",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "TipoId",
+            "IdKey": false,
+            "ColType": "tinyint",
+            "TypeL": 1,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "TipoId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "FechaDefuncion",
+            "IdKey": false,
+            "ColType": "datetime2",
+            "TypeL": 8,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "FechaDefuncion",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "EscolaridadId",
+            "IdKey": false,
+            "ColType": "tinyint",
+            "TypeL": 1,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "EscolaridadId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
+        },
+        {
+            "ColName": "NacionalidadId",
+            "IdKey": false,
+            "ColType": "smallint",
+            "TypeL": 2,
+            "IsNull": true,
+            "Def": null,
+            "ModelColName": "NacionalidadId",
+            "Allow": {
+                "Users": [],
+                "Roles": [],
+                "Groups": []
+            }
         }
-    }, {
-        "ColName": "SexoId",
-        "IdKey": false,
-        "ColType": "tinyint",
-        "TypeL": 1,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "SexoId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "FechaNacimiento",
-        "IdKey": false,
-        "ColType": "datetime2",
-        "TypeL": 8,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "FechaNacimiento",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "LugarNacimiento",
-        "IdKey": false,
-        "ColType": "nvarchar",
-        "TypeL": 8000,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "LugarNacimientoModel",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "GeneroId",
-        "IdKey": false,
-        "ColType": "tinyint",
-        "TypeL": 1,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "GeneroId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "EstadoCivilId",
-        "IdKey": false,
-        "ColType": "tinyint",
-        "TypeL": 1,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "EstadoCivilId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "Vigente",
-        "IdKey": false,
-        "ColType": "bit",
-        "TypeL": 1,
-        "IsNull": false,
-        "Def": null,
-        "ModelColName": "Vigente",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "Fecha",
-        "IdKey": false,
-        "ColType": "datetime2",
-        "TypeL": 8,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "Fecha",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "TipoId",
-        "IdKey": false,
-        "ColType": "tinyint",
-        "TypeL": 1,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "TipoId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "FechaDefuncion",
-        "IdKey": false,
-        "ColType": "datetime2",
-        "TypeL": 8,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "FechaDefuncion",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "EscolaridadId",
-        "IdKey": false,
-        "ColType": "tinyint",
-        "TypeL": 1,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "EscolaridadId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }, {
-        "ColName": "NacionalidadId",
-        "IdKey": false,
-        "ColType": "smallint",
-        "TypeL": 2,
-        "IsNull": true,
-        "Def": null,
-        "ModelColName": "NacionalidadId",
-        "Allow": {
-            "Users": [],
-            "Roles": [],
-            "Groups": []
-        }
-    }]
+    ]
 }
