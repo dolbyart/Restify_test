@@ -3,7 +3,7 @@ require('dotenv').config({
 });
 require('./helpers/validate-req').setDefaultMessages();
 
-require('./helpers/redis');
+//require('./helpers/redis');
 const moment = require('moment');
 const restify = require('restify');
 const routes = require('./routes/routes');

@@ -13,6 +13,7 @@ const modelsRepo = require("../../repo/models");
 const userRole = require("../../common/user_role");
 const _ = require('lodash');
 const chalk = require('chalk');
+const modelMethods = require('../../helpers/model-methods');
 
 router.get('/createmodels/', (req, res, next) => {
     let tables = [];
@@ -92,23 +93,83 @@ router.get("/", (req, res, next) => {
         if (req.query.per_page > MAX_PER_PAGE)
             return next(new errors.BadRequestError("max page error"));
     }
+
+    //console.log(req.query);
+
+
+    let queries = {
+        host: req.headers.host,
+        route: req.route.path,
+        page: null,
+        per_page: null,
+        orden: null,
+        filter: null,
+        fields: null,
+        table: null,
+        mdl: null,
+        key: null,
+        maxPerPage: MAX_PER_PAGE
+    };
+
+    //console.log(queries);
+
+    Object.keys(req.query).forEach(queryName => {
+        if (Object.keys(queries).includes(queryName))
+            queries[queryName] = req.query[queryName];
+    });
+    queries.mdl = queries.mdl.toLowerCase();
+    queries.table = modelMethods.GetTableName(queries.mdl);
+    queries.key = modelMethods.GetTableKey(queries.mdl);
+    if (queries.fields) {
+        queries.fields=modelMethods.MapFieldToTable(queries.mdl, queries.fields.split(' ').join('').split(',')).join(',');
+        /* let f = [];
+        queries.fields.split(' ').join('').split(',').forEach(field => {
+            f.push(modelMethods.MapFieldToTable(queries.mdl, field));
+        });
+        queries.fields = f.join(','); */
+        !queries.fields.includes(queries.key) ? queries.fields = (queries.fields + ',' + queries.key) : null;
+    } else
+        queries.fields = '*';
+
+
+
     repo
-        .get(req, MAX_PER_PAGE /*, 'CargoId' */ )
+        .get(queries)
         .then(data => {
-            tracer.trackTrace(`get${req.query.t}`);
-            tracer.trackEvent(`get${req.query.t}`);
+            
+            tracer.trackTrace(`get${req.query.mdl}`);
+            tracer.trackEvent(`get${req.query.mdl}`);
             res.send(200, data);
         })
         .catch(err => {
-            tracer.trackEvent(`get${req.query.t}Exception`);
+            tracer.trackEvent(`get${req.query.mdl}Exception`);
             tracer.trackException(err);
             res.send(500, error.internal);
         });
 });
 
 router.get("/:id", (req, res, next) => {
+    let queries = {
+        id: +req.params.id,
+        fields: null,
+        mdl: null
+    };
+
+    Object.keys(req.query).forEach(queryName => {
+        if (Object.keys(queries).includes(queryName))
+            queries[queryName] = req.query[queryName];
+        /*   else
+              throw new Error('Invalid query'); */
+    });
+    queries.mdl = queries.mdl.toLowerCase();
+    if (queries.fields)
+        fieldsString = CheckFiledKey(queries.fields, KEY);
+    else
+        fieldsString = '*';
+
+
     repo
-        .getById(+req.params.id, req)
+        .getById(queries)
         .then(data => {
             tracer.trackTrace(`get${req.query.tbl}ById`);
             tracer.trackEvent(`get${req.query.tbl}ById`);

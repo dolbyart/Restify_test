@@ -1,46 +1,18 @@
 const sql = require('mssql');
+const modelMethods = require('../helpers/model-methods');
 
-function CheckFiledKey(fields, key) {
-    let f = fields.split(' ').join('').split(',');
-    !f.includes(key) ? f.push(key) : null;
-    return f.join(',');
-}
 
 //#region GET
 
-const get = (req, maxPerPage /*,  tableName, key */ ) => {
+const get = (queries) => {
 
-    //console.log(req.query);
-
-    let queries = {
-        page: null,
-        per_page: null,
-        orden: null,
-        filter: null,
-        fields: null,
-        t: null,
-        key: null
-    };
-
-    Object.keys(req.query).forEach(queryName => {
-        if (Object.keys(queries).includes(queryName))
-            queries[queryName] = req.query[queryName];
-    });
-
-    //console.log(queries);
-
-    const TABLE_NAME = `dbo.${queries.t}`;
-
+    const MODEL_NAME = queries.mdl;
+    const TABLE_NAME = queries.table;
+    const MAX_PER_PAGE = queries.maxPerPage;
     const KEY = queries.key;
 
     let paginate = false;
     let queryString = '';
-
-    let fieldsString = '';
-    if (queries.fields)
-        fieldsString = CheckFiledKey(queries.fields, KEY);
-    else
-        fieldsString = '*';
 
     let filterString = '';
 
@@ -49,11 +21,11 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
     if (queries.page || queries.per_page) {
         paginate = true;
         if (!queries.per_page)
-            queries.per_page = maxPerPage;
-        /*  if (+queries.per_page > maxPerPage) {
-             throw new Error(`No mas de ${maxPerPage} por pagina`);
+            queries.per_page = MAX_PER_PAGE;
+        /*  if (+queries.per_page > MAX_PER_PAGE) {
+             throw new Error(`No mas de ${MAX_PER_PAGE} por pagina`);
              return new Promise((resolve, reject) => {
-                 reject(`No mas de ${maxPerPage} por pagina`);
+                 reject(`No mas de ${MAX_PER_PAGE} por pagina`);
              });
          } */
         if (!queries.page)
@@ -73,15 +45,18 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
                             WHERE s.[object_id] = OBJECT_ID('${TABLE_NAME}')
                             AND s.index_id < 2`;
 
-    queryString = `${totalRowsQuery} SELECT ${fieldsString} FROM ${TABLE_NAME} ${filterString} ${queryString}`;
+    queryString = `${totalRowsQuery} SELECT ${queries.fields} FROM ${TABLE_NAME} ${filterString} ${queryString}`;
 
     console.log(queryString);
 
     let obj = {
+        columnInfo: [],
         totalRows: null,
         totalPages: null,
         data: []
     };
+
+
     return new Promise((resolve, reject) => {
 
         new sql.Request()
@@ -89,6 +64,7 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
             .then(data => {
                 obj = data.recordsets[0][0];
                 obj.data = data.recordsets[1];
+                //obj.columns.entries().map(c => modelMethods.GetTModel(queries.mdl).Columns);
                 if (obj.data.length > 0) {
                     if (obj.totalRows === null)
                         obj.totalRows = obj.data.length;
@@ -99,7 +75,35 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
                 } else
                     obj.page = obj.totalRows = null;
 
-                obj.data.forEach(x => x.url = `${req.headers.host}${req.route.path}${x[KEY]}?t=${TABLE_NAME}&key=${KEY}`);
+                obj.columnInfo = [];
+
+                obj.data.forEach(x => {
+                    Object.keys(x).forEach(field => {
+                        let modelColName = modelMethods.MapFieldsToModel(queries.mdl, field).ModelColName;
+                        //let newField = modelMethods.MapFieldsToModel(queries.mdl, field).ModelColName;
+                        if (field !== modelColName) {
+                            Object.defineProperty(x, modelColName,
+                                Object.getOwnPropertyDescriptor(x, field));
+                            delete x[field];
+                        }
+                        /* console.log(modelMethods.getModelColumnsType(queries.mdl, modelColName)); */
+
+                    });
+
+                    obj.columnInfo.push(modelMethods.getModelColumnsType(queries.mdl, field));
+
+
+                    //obj.columnInfo.push(modelMethods.getModelColumnsType(x));
+                });
+
+                //Object.keys(obj.data[0]).forEach
+
+                obj.data.map(x => x.url = `${queries.host}${queries.route}${x[KEY]}?mdl=${MODEL_NAME}`);
+
+                /* let model = modelMethods.GetTModel(queries.mdl);
+
+                Object.entries(obj.columns).map(c => model.Columns.find(m => c.ModelColName === c.key)); */
+
                 resolve(obj);
             }).catch(err => {
                 reject(err);
@@ -109,26 +113,12 @@ const get = (req, maxPerPage /*,  tableName, key */ ) => {
 
 const getById = (id, req /* , tableName, key */ ) => {
 
-    let queries = {
-        fields: null,
-        t: null,
-        key: null
-    };
 
-    Object.keys(req.query).forEach(queryName => {
-        if (Object.keys(queries).includes(queryName))
-            queries[queryName] = req.query[queryName];
-        /*   else
-              throw new Error('Invalid query'); */
-    });
-    const TABLE_NAME = queries.t;
+    const TABLE_NAME = queries.mdl;
     const KEY = queries.key;
 
     let fieldsString = '';
-    if (queries.fields)
-        fieldsString = CheckFiledKey(queries.fields, KEY);
-    else
-        fieldsString = '*';
+
 
     const queryString = `
        SELECT TOP 1 * FROM(
@@ -146,8 +136,8 @@ const getById = (id, req /* , tableName, key */ ) => {
             .query(queryString)
             .then((data) => {
                 let obj = data.recordset[0];
-                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}?t=${TABLE_NAME}&key=${KEY}` : null;
-                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}?t=${TABLE_NAME}&key=${KEY}` : null;
+                obj.prevUrl = obj.prevUrl !== null ? obj.prevUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.prevUrl}?mdl=${TABLE_NAME}&key=${KEY}` : null;
+                obj.nextUrl = obj.nextUrl !== null ? obj.nextUrl = `${req.headers.host}${req.route.path.substr(0, req.route.path.indexOf(':'))}${obj.nextUrl}?mdl=${TABLE_NAME}&key=${KEY}` : null;
                 resolve(obj);
             })
             .catch((err) => {

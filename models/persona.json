@@ -2,6 +2,7 @@
     "ModelName": "Persona",
     "TableName": "Persona",
     "Schema": "dbo",
+    "Key": "Id",
     "Allow": {
         "Users": [],
         "Roles": [-1],
@@ -53,7 +54,7 @@
         "TypeL": 8000,
         "IsNull": true,
         "Def": null,
-        "ModelColName": "LugarNacimiento",
+        "ModelColName": "LugarNacimientoModel",
         "Allow": {
             "Users": [],
             "Roles": [],

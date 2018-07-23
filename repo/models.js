@@ -39,7 +39,8 @@ const getTable = tableName => {
     FROM sys.columns AS c
     INNER JOIN sys.objects AS o ON o.object_id = c.object_id
     LEFT OUTER JOIN sys.types AS t ON t.user_type_id = c.user_type_id
-    WHERE (o.type = 'U') AND (o.name = '${tableName}')`;
+    WHERE (o.type = 'U') AND (o.name = '${tableName}')
+    `;
 
 
 
