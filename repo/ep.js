@@ -90,7 +90,7 @@ const get = (queries) => {
 
                     });
 
-                    //obj.columnInfo.push(modelMethods.getModelColumnsType(queries.mdl, field));
+                    obj.columnInfo.push(modelMethods.getModelColumnsType(queries.mdl, field));
 
 
                     //obj.columnInfo.push(modelMethods.getModelColumnsType(x));
@@ -111,7 +111,7 @@ const get = (queries) => {
     });
 };
 
-const getById = (id, req /* , tableName, key */) => {
+const getById = (id, req /* , tableName, key */ ) => {
 
 
     const TABLE_NAME = queries.mdl;
